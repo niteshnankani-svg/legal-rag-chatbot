@@ -1,0 +1,26 @@
+# ── Dockerfile for ingestion pipeline ─────────────────────────────────
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Python packages needed for ingestion
+RUN pip install --no-cache-dir \
+    openai==1.54.0 \
+    transformers==4.46.0 \
+    torch==2.5.1 \
+    numpy==1.26.4 \
+    pdfplumber==0.11.4 \
+    pypdf==5.1.0 \
+    pydantic-settings==2.6.0 \
+    python-dotenv==1.0.1 \
+    structlog==24.4.0
+
+# Copy ingestion and app code
+COPY ingestion/ ./ingestion/
+COPY app/ ./app/
+
+# Create data directories
+RUN mkdir -p /app/data/raw /app/data/index
+
+# Run ingestion for all Acts
+CMD ["python", "-m", "ingestion.page_index_builder", "--act", "ALL", "--raw-dir", "/app/data/raw"]

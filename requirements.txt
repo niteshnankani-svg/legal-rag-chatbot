@@ -1,0 +1,38 @@
+# LLM
+openai==1.54.0
+
+# BERT — runs locally, no API cost
+transformers==4.46.0
+torch==2.9.0
+numpy==1.26.4
+
+# PDF extraction
+pdfplumber==0.11.4
+pypdf==5.1.0
+
+# API
+fastapi==0.115.4
+uvicorn[standard]==0.32.0
+pydantic==2.9.2
+pydantic-settings==2.6.0
+
+# Cache
+redis==5.2.0
+hiredis==3.0.0
+
+# Database (chat history)
+aiosqlite==0.20.0
+sqlalchemy[asyncio]==2.0.36
+
+# Frontend
+gradio==5.5.0
+
+# Utilities
+python-dotenv==1.0.1
+tenacity==9.0.0
+structlog==24.4.0
+httpx==0.27.2
+
+# Testing
+pytest==8.3.3
+pytest-asyncio==0.24.0

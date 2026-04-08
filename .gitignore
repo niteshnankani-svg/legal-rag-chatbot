@@ -1,0 +1,24 @@
+# Secret keys — never push these
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# Data files — too large for GitHub
+data/raw/
+data/index/
+*.pkl
+*.db
+
+# BERT model — too large
+models/
+
+# Mac system files
+.DS_Store
+
+# VS Code
+.vscode/
