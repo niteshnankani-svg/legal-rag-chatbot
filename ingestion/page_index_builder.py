@@ -251,21 +251,57 @@ def build_tree_index(act_code: str, pages: list[dict], client: OpenAI) -> dict:
         # Small delay to avoid hitting API rate limits
         time.sleep(0.5)
 
-    # Merge all batches into one tree
+    # Merge batches in groups of 5 to avoid token limit errors
+    # For large Acts like BNSS (17 batches), merging all at once fails
     log.info("merging_batches", act=act_code, total_batches=len(all_batch_results))
 
-    merge_user = (
-        f"Act code: {act_code}\n"
-        f"Full name: {act_meta['full_name']}\n"
-        f"Replaces: {act_meta.get('replaces') or 'N/A'}\n"
-        f"Effective: {act_meta['effective']}\n"
-        f"Total pages: {total_pages}\n\n"
-        f"Merge these {len(all_batch_results)} batch results:\n\n"
-        + "\n\n--- BATCH SEPARATOR ---\n\n".join(all_batch_results)
-    )
+    MERGE_GROUP_SIZE = 5
+    merged_groups = []
 
-    merged_text = _call_gpt4o(client, TREE_MERGE_SYSTEM, merge_user)
-    tree = _parse_json(merged_text)
+    for i in range(0, len(all_batch_results), MERGE_GROUP_SIZE):
+        group = all_batch_results[i: i + MERGE_GROUP_SIZE]
+        log.info("merging_group", act=act_code, group=f"{i//MERGE_GROUP_SIZE + 1}")
+
+        merge_user = (
+            f"Act code: {act_code}\n"
+            f"Full name: {act_meta['full_name']}\n"
+            f"Replaces: {act_meta.get('replaces') or 'N/A'}\n"
+            f"Effective: {act_meta['effective']}\n"
+            f"Total pages: {total_pages}\n\n"
+            f"Merge these {len(group)} batch results:\n\n"
+            + "\n\n--- BATCH SEPARATOR ---\n\n".join(group)
+        )
+
+        try:
+            merged_text = _call_gpt4o(client, TREE_MERGE_SYSTEM, merge_user)
+            merged_groups.append(merged_text)
+        except Exception as exc:
+            log.warning("group_merge_failed", group=i, error=str(exc))
+            # Use raw batch results as fallback for this group
+            merged_groups.extend(group)
+
+        time.sleep(0.5)
+
+    # If we have multiple groups, do a final merge of the merged groups
+    if len(merged_groups) > 1:
+        log.info("final_merge", act=act_code, groups=len(merged_groups))
+        try:
+            final_merge_user = (
+                f"Act code: {act_code}\n"
+                f"Full name: {act_meta['full_name']}\n"
+                f"Replaces: {act_meta.get('replaces') or 'N/A'}\n"
+                f"Effective: {act_meta['effective']}\n"
+                f"Total pages: {total_pages}\n\n"
+                f"Final merge of {len(merged_groups)} partial trees:\n\n"
+                + "\n\n--- SEPARATOR ---\n\n".join(merged_groups)
+            )
+            final_text = _call_gpt4o(client, TREE_MERGE_SYSTEM, final_merge_user)
+            tree = _parse_json(final_text)
+        except Exception as exc:
+            log.warning("final_merge_failed", error=str(exc))
+            tree = None
+    else:
+        tree = _parse_json(merged_groups[0]) if merged_groups else None
 
     if not tree:
         log.warning("merge_failed_using_fallback", act=act_code)

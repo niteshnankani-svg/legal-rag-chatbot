@@ -236,21 +236,51 @@ def _bert_retrieve(question: str, act_code: str, top_k: int = 5) -> list[dict]:
       1. Load all section embeddings for this Act
       2. Encode the question with BERT → 768 numbers
       3. Compare question embedding vs every section embedding
-      4. Return top_k sections with highest similarity score
-
-    This is BERT retrieval — fast, free, contextual.
+      4. Filter out generic/preliminary sections
+      5. Return top_k sections with highest similarity score
     """
     embeddings = _load_embeddings(act_code)
     if not embeddings:
         return []
 
-    # Encode the question
-    question_embedding = _bert_embed(question)
+    # Skip sections that are unlikely to answer legal questions
+    # Section 1 (short title), Section 2 (definitions intro) etc.
+    SKIP_SECTIONS = {
+        "Section 1", "Section 2", "Section 3",
+        "Chapter I", "Chapter II",
+    }
+    SKIP_TITLES = {
+        "short title", "commencement", "application",
+        "repeal", "savings", "extent",
+    }
+
+    # Enrich question with legal context for better BERT matching
+    enriched_question = f"Indian law legal provision: {question}"
+
+    # Encode the enriched question
+    question_embedding = _bert_embed(enriched_question)
 
     # Score every section
     scored = []
     for entry in embeddings:
+        sec_num = entry.get("section_number", "")
+        title   = entry.get("title", "").lower()
+
+        # Skip generic preliminary sections
+        if sec_num in SKIP_SECTIONS:
+            continue
+        if any(skip in title for skip in SKIP_TITLES):
+            continue
+
         score = _cosine_similarity(question_embedding, entry["embedding"])
+
+        # Boost sections that contain keywords from the question
+        question_words = set(question.lower().split())
+        title_words    = set(title.lower().split())
+        overlap        = question_words & title_words
+        if overlap:
+            score += 0.05 * len(overlap)  # small boost per matching word
+
         scored.append({**entry, "score": score})
 
     # Sort by score, return top K
