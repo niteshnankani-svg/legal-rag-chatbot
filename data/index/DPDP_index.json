@@ -1,0 +1,489 @@
+{
+  "act_code": "DPDP",
+  "act_full_name": "Digital Personal Data Protection Act 2023",
+  "replaces": null,
+  "effective_date": "Pending full notification",
+  "total_pages": 25,
+  "nodes": [
+    {
+      "node_id": "ch1_sec1",
+      "type": "section",
+      "title": "Short title and commencement",
+      "section_number": "Section 1",
+      "start_page": 5,
+      "end_page": 5,
+      "summary": "This section provides the short title of the Act and its commencement details.",
+      "children": []
+    },
+    {
+      "node_id": "ch1_sec2",
+      "type": "section",
+      "title": "Definitions",
+      "section_number": "Section 2",
+      "start_page": 5,
+      "end_page": 7,
+      "summary": "This section defines key terms used throughout the Act.",
+      "children": []
+    },
+    {
+      "node_id": "ch1_sec3",
+      "type": "section",
+      "title": "Application of Act",
+      "section_number": "Section 3",
+      "start_page": 7,
+      "end_page": 7,
+      "summary": "This section outlines the territorial and personal scope of the Act.",
+      "children": []
+    },
+    {
+      "node_id": "ch2_sec4",
+      "type": "section",
+      "title": "Grounds for processing personal data",
+      "section_number": "Section 4",
+      "start_page": 7,
+      "end_page": 8,
+      "summary": "This section specifies the lawful grounds for processing personal data.",
+      "children": []
+    },
+    {
+      "node_id": "ch2_sec5",
+      "type": "section",
+      "title": "Notice",
+      "section_number": "Section 5",
+      "start_page": 8,
+      "end_page": 9,
+      "summary": "This section mandates the provision of notice to data principals before processing their data.",
+      "children": []
+    },
+    {
+      "node_id": "ch2_sec6",
+      "type": "section",
+      "title": "Consent",
+      "section_number": "Section 6",
+      "start_page": 9,
+      "end_page": 10,
+      "summary": "This section details the requirements for obtaining valid consent from data principals.",
+      "children": []
+    },
+    {
+      "node_id": "ch2_sec7",
+      "type": "section",
+      "title": "Certain legitimate uses",
+      "section_number": "Section 7",
+      "start_page": 10,
+      "end_page": 10,
+      "summary": "This section lists specific legitimate uses for processing personal data without consent.",
+      "children": []
+    },
+    {
+      "node_id": "ch2_sec8",
+      "type": "section",
+      "title": "General obligations of Data Fiduciary",
+      "section_number": "Section 8",
+      "start_page": 10,
+      "end_page": 11,
+      "summary": "This section outlines the general responsibilities of data fiduciaries in handling personal data.",
+      "children": []
+    },
+    {
+      "node_id": "ch2_sec9",
+      "type": "section",
+      "title": "Processing of personal data of children",
+      "section_number": "Section 9",
+      "start_page": 11,
+      "end_page": 12,
+      "summary": "This section provides special provisions for processing children's personal data.",
+      "children": []
+    },
+    {
+      "node_id": "ch2_sec10",
+      "type": "section",
+      "title": "Additional obligations of Significant Data Fiduciary",
+      "section_number": "Section 10",
+      "start_page": 12,
+      "end_page": 12,
+      "summary": "This section imposes additional obligations on significant data fiduciaries.",
+      "children": []
+    },
+    {
+      "node_id": "ch3_sec11",
+      "type": "section",
+      "title": "Right to access information about personal data",
+      "section_number": "Section 11",
+      "start_page": 12,
+      "end_page": 13,
+      "summary": "This section grants data principals the right to access information about their personal data.",
+      "children": []
+    },
+    {
+      "node_id": "ch3_sec12",
+      "type": "section",
+      "title": "Right to correction and erasure of personal data",
+      "section_number": "Section 12",
+      "start_page": 13,
+      "end_page": 13,
+      "summary": "This section provides data principals the right to correct and erase their personal data.",
+      "children": []
+    },
+    {
+      "node_id": "ch3_sec13",
+      "type": "section",
+      "title": "Right of grievance redressal",
+      "section_number": "Section 13",
+      "start_page": 13,
+      "end_page": 13,
+      "summary": "This section ensures data principals have access to grievance redressal mechanisms.",
+      "children": []
+    },
+    {
+      "node_id": "ch3_sec14",
+      "type": "section",
+      "title": "Right to nominate",
+      "section_number": "Section 14",
+      "start_page": 13,
+      "end_page": 14,
+      "summary": "This section allows data principals to nominate others to exercise their rights posthumously or in case of incapacity.",
+      "children": []
+    },
+    {
+      "node_id": "ch3_sec15",
+      "type": "section",
+      "title": "Duties of Data Principal",
+      "section_number": "Section 15",
+      "start_page": 14,
+      "end_page": 14,
+      "summary": "This section outlines the duties of data principals under the Act.",
+      "children": []
+    },
+    {
+      "node_id": "ch4_sec16",
+      "type": "section",
+      "title": "Processing of personal data outside India",
+      "section_number": "Section 16",
+      "start_page": 14,
+      "end_page": 14,
+      "summary": "This section regulates the transfer of personal data outside India.",
+      "children": []
+    },
+    {
+      "node_id": "ch4_sec17",
+      "type": "section",
+      "title": "Exemptions",
+      "section_number": "Section 17",
+      "start_page": 14,
+      "end_page": 15,
+      "summary": "This section lists exemptions to the application of the Act.",
+      "children": []
+    },
+    {
+      "node_id": "ch5_sec18",
+      "type": "section",
+      "title": "Establishment of Board",
+      "section_number": "Section 18",
+      "start_page": 15,
+      "end_page": 15,
+      "summary": "This section establishes the Data Protection Board of India.",
+      "children": []
+    },
+    {
+      "node_id": "ch5_sec19",
+      "type": "section",
+      "title": "Composition and qualifications for appointment of Chairperson and Members",
+      "section_number": "Section 19",
+      "start_page": 15,
+      "end_page": 15,
+      "summary": "This section details the composition and qualifications for the Board's Chairperson and Members.",
+      "children": []
+    },
+    {
+      "node_id": "ch5_sec20",
+      "type": "section",
+      "title": "Salary, allowances payable to and term of office",
+      "section_number": "Section 20",
+      "start_page": 15,
+      "end_page": 15,
+      "summary": "This section specifies the salary, allowances, and term of office for the Board's Chairperson and Members.",
+      "children": []
+    },
+    {
+      "node_id": "sec21",
+      "type": "section",
+      "title": "Disqualifications for appointment and continuation as Chairperson and Members of Board",
+      "section_number": "Section 21",
+      "start_page": 16,
+      "end_page": 16,
+      "summary": "Lists the disqualifications for being appointed or continuing as the Chairperson or a Member of the Board.",
+      "children": []
+    },
+    {
+      "node_id": "sec22",
+      "type": "section",
+      "title": "Resignation by Members and filling of vacancy",
+      "section_number": "Section 22",
+      "start_page": 16,
+      "end_page": 16,
+      "summary": "Describes the process for resignation of Board members and filling vacancies.",
+      "children": []
+    },
+    {
+      "node_id": "sec23",
+      "type": "section",
+      "title": "Proceedings of Board",
+      "section_number": "Section 23",
+      "start_page": 16,
+      "end_page": 16,
+      "summary": "Outlines the procedures for Board meetings and decision-making.",
+      "children": []
+    },
+    {
+      "node_id": "sec24",
+      "type": "section",
+      "title": "Officers and employees of Board",
+      "section_number": "Section 24",
+      "start_page": 16,
+      "end_page": 16,
+      "summary": "Allows the Board to appoint officers and employees with the Central Government's approval.",
+      "children": []
+    },
+    {
+      "node_id": "sec25",
+      "type": "section",
+      "title": "Members and officers to be public servants",
+      "section_number": "Section 25",
+      "start_page": 17,
+      "end_page": 17,
+      "summary": "Declares Board members and officers as public servants under the Indian Penal Code.",
+      "children": []
+    },
+    {
+      "node_id": "sec26",
+      "type": "section",
+      "title": "Powers of Chairperson",
+      "section_number": "Section 26",
+      "start_page": 17,
+      "end_page": 17,
+      "summary": "Details the powers of the Chairperson regarding administrative matters of the Board.",
+      "children": []
+    },
+    {
+      "node_id": "ch6",
+      "type": "chapter",
+      "title": "POWERS, FUNCTIONS AND PROCEDURE TO BE FOLLOWED BY BOARD",
+      "section_number": "Chapter VI",
+      "start_page": 17,
+      "end_page": 18,
+      "summary": "Describes the powers, functions, and procedures of the Board.",
+      "children": []
+    },
+    {
+      "node_id": "sec27",
+      "type": "section",
+      "title": "Powers and functions of Board",
+      "section_number": "Section 27",
+      "start_page": 17,
+      "end_page": 17,
+      "summary": "Lists the powers and functions of the Board, including handling data breaches and complaints.",
+      "children": []
+    },
+    {
+      "node_id": "sec28",
+      "type": "section",
+      "title": "Procedure to be followed by Board",
+      "section_number": "Section 28",
+      "start_page": 17,
+      "end_page": 18,
+      "summary": "Outlines the procedure for the Board's inquiries and decision-making process.",
+      "children": []
+    },
+    {
+      "node_id": "ch7",
+      "type": "chapter",
+      "title": "APPEAL AND ALTERNATE DISPUTE RESOLUTION",
+      "section_number": "Chapter VII",
+      "start_page": 18,
+      "end_page": 19,
+      "summary": "Covers the appeal process and alternate dispute resolution mechanisms.",
+      "children": []
+    },
+    {
+      "node_id": "sec29",
+      "type": "section",
+      "title": "Appeal to Appellate Tribunal",
+      "section_number": "Section 29",
+      "start_page": 18,
+      "end_page": 19,
+      "summary": "Describes the process for appealing Board decisions to the Appellate Tribunal.",
+      "children": []
+    },
+    {
+      "node_id": "sec30",
+      "type": "section",
+      "title": "Orders passed by Appellate Tribunal to be executable as decree",
+      "section_number": "Section 30",
+      "start_page": 19,
+      "end_page": 19,
+      "summary": "States that Appellate Tribunal orders are executable as civil court decrees.",
+      "children": []
+    },
+    {
+      "node_id": "sec31",
+      "type": "section",
+      "title": "Alternate dispute resolution",
+      "section_number": "Section 31",
+      "start_page": 19,
+      "end_page": 19,
+      "summary": "Allows for mediation as a means to resolve disputes.",
+      "children": []
+    },
+    {
+      "node_id": "sec32",
+      "type": "section",
+      "title": "Voluntary undertaking",
+      "section_number": "Section 32",
+      "start_page": 19,
+      "end_page": 19,
+      "summary": "Permits the Board to accept voluntary undertakings related to compliance.",
+      "children": []
+    },
+    {
+      "node_id": "ch8",
+      "type": "chapter",
+      "title": "PENALTIES AND ADJUDICATION",
+      "section_number": "Chapter VIII",
+      "start_page": 20,
+      "end_page": 20,
+      "summary": "Details penalties for breaches and the adjudication process.",
+      "children": []
+    },
+    {
+      "node_id": "sec33",
+      "type": "section",
+      "title": "Penalties",
+      "section_number": "Section 33",
+      "start_page": 20,
+      "end_page": 20,
+      "summary": "Specifies monetary penalties for significant breaches of the Act.",
+      "children": []
+    },
+    {
+      "node_id": "sec34",
+      "type": "section",
+      "title": "Crediting sums realised by way of penalties to Consolidated Fund of India",
+      "section_number": "Section 34",
+      "start_page": 20,
+      "end_page": 20,
+      "summary": "Mandates that penalties collected are credited to the Consolidated Fund of India.",
+      "children": []
+    },
+    {
+      "node_id": "ch9",
+      "type": "chapter",
+      "title": "MISCELLANEOUS",
+      "section_number": "Chapter IX",
+      "start_page": 20,
+      "end_page": 23,
+      "summary": "Includes various provisions such as protection of actions, power to make rules, and amendments.",
+      "children": []
+    },
+    {
+      "node_id": "sec35",
+      "type": "section",
+      "title": "Protection of action taken in good faith",
+      "section_number": "Section 35",
+      "start_page": 20,
+      "end_page": 20,
+      "summary": "Protects actions taken in good faith under the Act from legal proceedings.",
+      "children": []
+    },
+    {
+      "node_id": "sec36",
+      "type": "section",
+      "title": "Power to call for information",
+      "section_number": "Section 36",
+      "start_page": 20,
+      "end_page": 20,
+      "summary": "Allows the Central Government to request information from the Board and Data Fiduciaries.",
+      "children": []
+    },
+    {
+      "node_id": "sec37",
+      "type": "section",
+      "title": "Power of Central Government to issue directions",
+      "section_number": "Section 37",
+      "start_page": 20,
+      "end_page": 21,
+      "summary": "Empowers the Central Government to issue directions for blocking information in public interest.",
+      "children": []
+    },
+    {
+      "node_id": "sec38",
+      "type": "section",
+      "title": "Consistency with other laws",
+      "section_number": "Section 38",
+      "start_page": 21,
+      "end_page": 21,
+      "summary": "States that the Act is in addition to other laws and prevails in case of conflict.",
+      "children": []
+    },
+    {
+      "node_id": "sec39",
+      "type": "section",
+      "title": "Bar of jurisdiction",
+      "section_number": "Section 39",
+      "start_page": 21,
+      "end_page": 21,
+      "summary": "Precludes civil courts from jurisdiction over matters under the Act.",
+      "children": []
+    },
+    {
+      "node_id": "sec40",
+      "type": "section",
+      "title": "Power to make rules",
+      "section_number": "Section 40",
+      "start_page": 21,
+      "end_page": 22,
+      "summary": "Grants the Central Government the power to make rules for carrying out the Act.",
+      "children": []
+    },
+    {
+      "node_id": "sec41",
+      "type": "section",
+      "title": "Laying of rules and certain notifications",
+      "section_number": "Section 41",
+      "start_page": 22,
+      "end_page": 22,
+      "summary": "Requires rules and notifications to be laid before Parliament.",
+      "children": []
+    },
+    {
+      "node_id": "sec42",
+      "type": "section",
+      "title": "Power to amend Schedule",
+      "section_number": "Section 42",
+      "start_page": 22,
+      "end_page": 22,
+      "summary": "Allows the Central Government to amend the Schedule of penalties.",
+      "children": []
+    },
+    {
+      "node_id": "sec43",
+      "type": "section",
+      "title": "Power to remove difficulties",
+      "section_number": "Section 43",
+      "start_page": 22,
+      "end_page": 23,
+      "summary": "Empowers the Central Government to make provisions for removing difficulties in implementing the Act.",
+      "children": []
+    },
+    {
+      "node_id": "sec44",
+      "type": "section",
+      "title": "Amendments to certain Acts",
+      "section_number": "Section 44",
+      "start_page": 23,
+      "end_page": 23,
+      "summary": "Details amendments to other Acts as a consequence of this Act.",
+      "children": []
+    }
+  ]
+}
