@@ -120,13 +120,23 @@ Rules:
 """
 
 # This prompt merges all batches into one final tree
-TREE_MERGE_SYSTEM = """You are a legal document analyst.
-You have multiple JSON arrays describing parts of an Indian legal Act.
+TREE_MERGE_SYSTEM = """You are a senior Indian legal document analyst.
+You have multiple JSON arrays describing sections of an Indian legal Act.
 
-Merge them into ONE complete hierarchical JSON tree.
-Remove duplicates. Build parent-child relationships.
+Your job:
+1. Merge ALL nodes into ONE complete hierarchical JSON tree
+2. Remove exact duplicates (same section_number)
+3. Build PROPER parent-child relationships:
+   - Chapters are parents
+   - Sections belong inside their chapter as children
+   - Sub-sections belong inside their section as children
+4. Order everything by page number
+5. Every section must have a meaningful summary
 
-Return this exact structure:
+CRITICAL — The tree MUST be hierarchical, not flat.
+Example: Section 479 (bail) must be INSIDE Chapter XXXV (Bail), not at root level.
+
+Return this exact JSON structure:
 {
   "act_code": "<ACT_CODE>",
   "act_full_name": "<FULL NAME>",
@@ -135,22 +145,22 @@ Return this exact structure:
   "total_pages": <int>,
   "nodes": [
     {
-      "node_id": "...",
+      "node_id": "ch1",
       "type": "chapter",
-      "title": "...",
-      "section_number": "...",
-      "start_page": <int>,
-      "end_page": <int>,
-      "summary": "...",
+      "title": "PRELIMINARY",
+      "section_number": "Chapter I",
+      "start_page": 1,
+      "end_page": 5,
+      "summary": "Short title, definitions and preliminary provisions",
       "children": [
         {
-          "node_id": "...",
+          "node_id": "sec1",
           "type": "section",
-          "title": "...",
-          "section_number": "...",
-          "start_page": <int>,
-          "end_page": <int>,
-          "summary": "...",
+          "title": "Short title and commencement",
+          "section_number": "Section 1",
+          "start_page": 1,
+          "end_page": 1,
+          "summary": "Names the Act and states when it comes into force",
           "children": []
         }
       ]
@@ -158,7 +168,7 @@ Return this exact structure:
   ]
 }
 
-Return ONLY the JSON object. No explanation. No markdown.
+Return ONLY valid JSON. No explanation. No markdown fences.
 """
 
 
