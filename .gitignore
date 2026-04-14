@@ -8,13 +8,13 @@ __pycache__/
 *.pyo
 .Python
 
-# Data files — too large for GitHub
+# Raw source PDFs only
 data/raw/
-data/index/
-*.pkl
+
+# Local database only
 *.db
 
-# BERT model — too large
+# BERT model cache — too large
 models/
 
 # Mac system files
