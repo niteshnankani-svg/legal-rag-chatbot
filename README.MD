@@ -1,79 +1,164 @@
-⚖️ Legal RAG Chatbot — Indian Laws
-A Retrieval-Augmented Generation (RAG) chatbot for Indian lawyers that answers questions about India's new criminal laws with exact section citations.
-Covers
+---
+title: Legal RAG Chatbot Indian Laws
+emoji: ⚖️
+colorFrom: indigo
+colorTo: blue
+sdk: gradio
+sdk_version: 5.5.0
+python_version: "3.11"
+app_file: app.py
+pinned: false
+---
 
-BNS 2023 — Bharatiya Nyaya Sanhita (replaces IPC 1860)
-BNSS 2023 — Bharatiya Nagarik Suraksha Sanhita (replaces CrPC 1973)
-BSA 2023 — Bharatiya Sakshya Adhiniyam (replaces Evidence Act 1872)
-DPDP Act 2023 — Digital Personal Data Protection Act
+# ⚖️ Legal RAG Chatbot — Indian Laws
 
-Architecture
-Three AI models working together:
+A production-grade RAG chatbot for Indian lawyers that answers legal questions about India's new criminal laws with **exact section citations**.
 
-Custom PageIndex (GPT-4o) — builds hierarchical tree index from PDFs
-BERT — contextual section retrieval (runs locally, free)
-GPT-4o — generates cited answers from retrieved sections
+## Live Demo
+🚀 **[Try it on HuggingFace Spaces](https://huggingface.co/spaces/nitz0219/legal-rag-chatbot)**
 
-Tech Stack
-ComponentTechnologyTree indexingCustom PageIndex + GPT-4oSection understandingBERT (bert-base-uncased)Answer generationOpenAI GPT-4oPDF extractionpdfplumberAPI layerFastAPICacheRedisChat historySQLiteFrontendGradioDeploymentDocker Compose
-Setup
-1. Clone the repo
-bashgit clone https://github.com/niteshnankani-svg/legal-rag-chatbot.git
+## Covers
+- **BNS 2023** — Bharatiya Nyaya Sanhita (replaces IPC 1860)
+- **BNSS 2023** — Bharatiya Nagarik Suraksha Sanhita (replaces CrPC 1973)
+- **BSA 2023** — Bharatiya Sakshya Adhiniyam (replaces Evidence Act 1872)
+- **DPDP Act 2023** — Digital Personal Data Protection Act
+
+## Architecture — 3 Models Working Together
+
+```
+PDF → pdfplumber → Custom PageIndex (GPT-4o) → Hierarchical Tree JSON
+                 → BERT (bert-base-uncased)   → Section Embeddings
+
+Question → Law Router → BERT Retrieval → Fetch Exact Pages
+         → GPT-4o → Cited Answer → Gradio UI
+```
+
+| Model | Job | Why |
+|---|---|---|
+| Custom PageIndex (GPT-4o) | Builds tree index from PDFs | Preserves legal document structure |
+| BERT (bert-base-uncased) | Finds relevant sections | Contextual understanding, runs locally, free |
+| GPT-4o | Generates cited answer | Best reasoning + citation following |
+
+## Tech Stack
+| Component | Technology |
+|---|---|
+| Tree indexing | Custom PageIndex + GPT-4o |
+| Section retrieval | BERT (bert-base-uncased) |
+| Answer generation | OpenAI GPT-4o |
+| PDF extraction | pdfplumber |
+| API layer | FastAPI |
+| Cache | Redis (TTL 1hr) |
+| Chat history | SQLite |
+| Frontend | Gradio |
+| Deployment | Docker Compose |
+
+## Local Setup
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/niteshnankani-svg/legal-rag-chatbot.git
 cd legal-rag-chatbot
-2. Create virtual environment
-bashpython3.11 -m venv venv
+```
+
+### 2. Create virtual environment (Python 3.11 required)
+```bash
+python3.11 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-3. Set up environment variables
-bashcp .env.example .env
-# Add your OpenAI API key to .env
-4. Add PDF files
-Download the official PDFs and place in data/raw/:
+```
 
-bns_2023.pdf from legislative.gov.in
-bnss_2023.pdf from legislative.gov.in
-bsa_2023.pdf from legislative.gov.in
-dpdp_2023.pdf from meity.gov.in
+### 3. Set up environment variables
+```bash
+cp .env.example .env
+# Open .env and add your OPENAI_API_KEY
+```
 
-5. Run ingestion (one time only)
-bashpython -m ingestion.page_index_builder --act ALL --raw-dir data/raw
+### 4. Download official PDFs
+Download from government websites and place in `data/raw/`:
+
+| File | Source |
+|---|---|
+| `bns_2023.pdf` | legislative.gov.in |
+| `bnss_2023.pdf` | legislative.gov.in |
+| `bsa_2023.pdf` | legislative.gov.in |
+| `dpdp_2023.pdf` | meity.gov.in |
+
+### 5. Run ingestion (one time only — takes 45-60 mins)
+```bash
+# Step 1 — Build PageIndex tree from PDFs
+python -m ingestion.page_index_builder --act ALL --raw-dir data/raw
+
+# Step 2 — Generate BERT embeddings for each section
 python -m ingestion.bert_embedder --act ALL
-6. Start the chatbot
-bash# Terminal 1 — Redis
+```
+
+### 6. Start the chatbot (3 terminals)
+```bash
+# Terminal 1 — Redis cache
 redis-server
 
-# Terminal 2 — FastAPI
+# Terminal 2 — FastAPI backend
 uvicorn app.api.main:app --reload --port 8000
 
-# Terminal 3 — Gradio UI
+# Terminal 3 — Gradio frontend
 python -m app.frontend.ui
-Open http://localhost:7860 in your browser.
-Project Structure
+```
+
+Open **http://localhost:7860** in your browser.
+
+### 7. Or run with Docker
+```bash
+# Start everything with one command
+docker compose up -d
+
+# Run ingestion (first time only)
+docker compose --profile ingest up ingestor
+```
+
+## Project Structure
+```
 legal-rag-chatbot/
 ├── data/
-│   ├── raw/          ← place PDFs here
-│   └── index/        ← generated by ingestion
+│   ├── raw/          ← place PDFs here (not included in repo)
+│   └── index/        ← generated by ingestion (not included in repo)
 ├── ingestion/
-│   ├── page_index_builder.py
-│   └── bert_embedder.py
+│   ├── page_index_builder.py  ← Custom PageIndex implementation
+│   └── bert_embedder.py       ← BERT embedding pipeline
 ├── app/
 │   ├── core/
-│   │   ├── config.py
-│   │   ├── logger.py
-│   │   ├── cache.py
-│   │   └── rag_engine.py
+│   │   ├── config.py          ← all settings
+│   │   ├── logger.py          ← structured logging
+│   │   ├── cache.py           ← Redis cache
+│   │   └── rag_engine.py      ← BERT retrieval + GPT-4o answer
 │   ├── api/
-│   │   └── main.py
+│   │   └── main.py            ← FastAPI server
 │   ├── db/
-│   │   ├── models.py
-│   │   └── repository.py
+│   │   ├── models.py          ← SQLite table definitions
+│   │   └── repository.py      ← chat history operations
 │   └── frontend/
-│       └── ui.py
-├── requirements.txt
+│       └── ui.py              ← Gradio chat interface
+├── docker/
+│   ├── Dockerfile.api
+│   ├── Dockerfile.gradio
+│   └── Dockerfile.ingestor
 ├── docker-compose.yml
-└── .env.example
-Author
-Nitesh Nankani — AI/ML Engineer
+├── requirements.txt
+├── app.py                     ← HuggingFace Spaces entry point
+└── .env.example               ← environment template
+```
 
-GitHub: @niteshnankani-svg
-HuggingFace: nitz0219
+## Note on Index Files
+The pre-built index files (PageIndex trees + BERT embeddings) are hosted on HuggingFace Spaces and are not included in this GitHub repo due to file size. To run locally, follow the ingestion steps above to generate them from the PDFs.
+
+## Example Questions
+- "What is the punishment for murder under BNS 2023?"
+- "What are the bail provisions for non-bailable offences?"
+- "How is electronic evidence admissible under BSA 2023?"
+- "What are the rights of a data principal under DPDP Act?"
+- "What changed from IPC Section 302 to BNS?"
+
+## Author
+**Nitesh Nankani** — AI/ML Engineer
+- GitHub: [@niteshnankani-svg](https://github.com/niteshnankani-svg)
+- HuggingFace: [nitz0219](https://huggingface.co/nitz0219)
+- LinkedIn: [nitesh-nankani](https://linkedin.com/in/nitesh-nankani-96014389)
