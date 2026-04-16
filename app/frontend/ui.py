@@ -1,264 +1,180 @@
 """
-app/frontend/ui.py
-──────────────────────────────────────────────
-WHAT THIS FILE DOES:
-  This is the Gradio chat interface that lawyers use.
-  It sends questions to FastAPI and displays answers
-  with a citations panel.
-
-FEATURES:
-  - Chat window with multi-turn conversation
-  - Act filter dropdown (AUTO/BNS/BNSS/BSA/DPDP/ALL)
-  - Citations panel showing exact sections used
-  - New session button to start fresh
-  - Example questions to get started quickly
-  - Shows response time and cache status
-
-HOW TO RUN:
-  python -m app.frontend.ui
-  Then open: http://localhost:7860
+app/frontend/ui.py — Gradio chat interface
+HuggingFace-compatible. Queue disabled to fix stop_event bug.
 """
 from __future__ import annotations
-
 import httpx
 import gradio as gr
-
 from app.core.config import get_settings
 
 settings = get_settings()
-API_URL  = settings.gradio_api_url
+API_URL = settings.gradio_api_url
 
 
-# ── API helper ────────────────────────────────────────────────────────
-
-async def _ask_api(
-    question:   str,
-    act_filter: str,
-    session_id: str | None,
-) -> dict:
-    """
-    Sends question to FastAPI /query endpoint.
-    Returns the full response dict.
-    """
-    async with httpx.AsyncClient(timeout=60) as client:
-        response = await client.post(
-            f"{API_URL}/query",
-            json={
-                "question":   question,
-                "act_filter": None if act_filter == "AUTO" else act_filter,
-                "session_id": session_id or None,
-            },
-        )
-        response.raise_for_status()
-        return response.json()
+def _ask_api(question: str, act_filter: str, session_id: str) -> dict:
+    with httpx.Client(timeout=120) as client:
+        r = client.post(f"{API_URL}/query", json={
+            "question":   question,
+            "act_filter": None if act_filter == "AUTO" else act_filter,
+            "session_id": session_id or None,
+        })
+        r.raise_for_status()
+        return r.json()
 
 
-async def _new_session_api() -> str:
-    """Creates a new session via FastAPI and returns the session_id."""
-    async with httpx.AsyncClient(timeout=10) as client:
-        response = await client.post(f"{API_URL}/sessions", json={})
-        response.raise_for_status()
-        return response.json()["session_id"]
+def _new_session() -> str:
+    try:
+        with httpx.Client(timeout=15) as client:
+            r = client.post(f"{API_URL}/sessions", json={})
+            r.raise_for_status()
+            return r.json()["session_id"]
+    except Exception:
+        return ""
 
 
-# ── Citation formatter ────────────────────────────────────────────────
+def _check_backend() -> bool:
+    try:
+        with httpx.Client(timeout=5) as client:
+            r = client.get(f"{API_URL}/health")
+            return r.status_code == 200
+    except Exception:
+        return False
+
 
 def _format_citations(citations: list[dict]) -> str:
-    """
-    Formats the citations list into readable markdown
-    for display in the citations panel.
-    """
     if not citations:
         return "*No citations retrieved.*"
-
     lines = ["### 📚 Sections Referenced\n"]
-
     for i, c in enumerate(citations, 1):
         lines.append(
             f"**{i}. {c['act_full_name']}**\n"
             f"- Section: `{c['section_number']}`\n"
             f"- Title: {c['title']}\n"
             f"- Pages: {c['pages']}\n"
-            f"- Relevance score: `{c['score']}`\n"
+            f"- Relevance: `{c['score']}`\n"
             f"- *{c['summary']}*\n"
         )
-
     return "\n".join(lines)
 
 
-# ── Main chat function ────────────────────────────────────────────────
-
-async def chat(
-    message:       str,
-    history:       list,
-    act_filter:    str,
-    session_state: dict,
-):
-    """
-    Called every time the lawyer submits a question.
-
-    Flow:
-      1. Add question to chat history immediately
-      2. Send to FastAPI
-      3. Update chat with answer
-      4. Update citations panel
-    """
+def chat(message: str, history: list, act_filter: str, session_id: str):
     if not message.strip():
-        yield history, "*Ask a question to see citations.*", session_state
-        return
+        return history, "*Ask a question to see citations.*", session_id
 
-    session_id = session_state.get("session_id")
+    if not _check_backend():
+        history = history + [[message,
+            "⏳ **Backend warming up.** Please wait 30 seconds and try again."
+        ]]
+        return history, "*Backend warming up...*", session_id
 
-    # Show question immediately in chat
     history = history + [[message, None]]
-    yield history, "*Searching legal sections...*", session_state
 
     try:
-        data = await _ask_api(message, act_filter, session_id)
-    except httpx.HTTPStatusError as e:
-        error_msg = f"⚠️ API error {e.response.status_code}: {e.response.text}"
-        history[-1][1] = error_msg
-        yield history, "*Error occurred.*", session_state
-        return
+        data = _ask_api(message, act_filter, session_id or None)
     except httpx.ConnectError:
-        error_msg = (
-            "⚠️ Cannot connect to API server.\n\n"
-            "Make sure FastAPI is running:\n"
-            "`uvicorn app.api.main:app --reload --port 8000`"
-        )
-        history[-1][1] = error_msg
-        yield history, "*Connection error.*", session_state
-        return
+        history[-1][1] = "⏳ **Backend starting up.** Please wait 30 seconds and try again."
+        return history, "*Connecting...*", session_id
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 503:
+            history[-1][1] = "⚠️ **Index loading.** Please wait 30 seconds and try again."
+        else:
+            history[-1][1] = f"⚠️ Error {e.response.status_code}"
+        return history, "*Error.*", session_id
     except Exception as e:
-        history[-1][1] = f"⚠️ Unexpected error: {str(e)}"
-        yield history, "*Error occurred.*", session_state
-        return
+        history[-1][1] = f"⚠️ Error: {str(e)}"
+        return history, "*Error.*", session_id
 
-    # Update session_id if this was a new session
-    if not session_id:
-        session_state = {**session_state, "session_id": data["session_id"]}
-
-    # Build answer with metadata footer
+    new_session_id = data.get("session_id", session_id)
     cache_badge = "⚡ cached" if data["cached"] else f"🔍 {data['latency_ms']}ms"
-    acts_badge  = " · ".join(data["act_scope"])
-    footer      = f"\n\n---\n*{cache_badge} | Acts searched: {acts_badge}*"
-
-    history[-1][1] = data["answer"] + footer
-
-    # Format citations for the panel
-    citations_md = _format_citations(data["citations"])
-
-    yield history, citations_md, session_state
+    acts_badge = " · ".join(data["act_scope"])
+    history[-1][1] = data["answer"] + f"\n\n---\n*{cache_badge} | Acts: {acts_badge}*"
+    return history, _format_citations(data["citations"]), new_session_id
 
 
-async def start_new_session(session_state: dict):
-    """Clears chat and starts a fresh session."""
-    sid = await _new_session_api()
-    return [], "*New session started. Ask your first question.*", {"session_id": sid}
+def start_new_session(session_id: str):
+    sid = _new_session()
+    return [], "*New session started.*", sid
 
-
-# ── Build the UI ──────────────────────────────────────────────────────
 
 def build_ui() -> gr.Blocks:
-    """
-    Creates and returns the Gradio UI.
-    Called once when the app starts.
-    """
     with gr.Blocks(
         title="Legal RAG — Indian Laws",
-        theme=gr.themes.Soft(
-            primary_hue="indigo",
-            secondary_hue="slate",
-        ),
+        theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate"),
     ) as demo:
 
-        # Session state — stores session_id across messages
-        session_state = gr.State({"session_id": None})
+        session_id = gr.State("")
 
-        # ── Header ────────────────────────────────────────────────────
         gr.Markdown("""
         # ⚖️ Legal RAG Chatbot — Indian Laws
-        **BNS 2023** (replaces IPC) · **BNSS 2023** (replaces CrPC) ·
-        **BSA 2023** (replaces Evidence Act) · **DPDP Act 2023**
+        **BNS 2023** · **BNSS 2023** · **BSA 2023** · **DPDP Act 2023**
 
         Ask any legal question and get answers with **exact section citations**.
+        *First response may take 30–60 seconds on startup.*
         """)
 
-        # ── Main layout ───────────────────────────────────────────────
         with gr.Row():
-
-            # Left column — chat
             with gr.Column(scale=3):
                 chatbot = gr.Chatbot(
-                    label="Legal Q&A",
-                    height=500,
-                    show_copy_button=True,
-                    render_markdown=True,
+                    label="Legal Q&A", height=500,
+                    show_copy_button=True, render_markdown=True,
                     bubble_full_width=False,
                 )
-
                 with gr.Row():
                     msg_input = gr.Textbox(
                         placeholder="e.g. What is the punishment for murder under BNS 2023?",
-                        label="Your question",
-                        lines=2,
-                        scale=5,
+                        label="Your question", lines=2, scale=5,
                     )
                     act_filter = gr.Dropdown(
                         choices=["AUTO", "BNS", "BNSS", "BSA", "DPDP", "ALL"],
-                        value="AUTO",
-                        label="Act filter",
-                        scale=1,
+                        value="AUTO", label="Act filter", scale=1,
                     )
-
                 with gr.Row():
-                    submit_btn     = gr.Button("Ask ⚖️", variant="primary", scale=4)
+                    submit_btn      = gr.Button("Ask ⚖️", variant="primary", scale=4)
                     new_session_btn = gr.Button("🔄 New session", scale=1)
 
-            # Right column — citations
             with gr.Column(scale=2):
                 citation_box = gr.Markdown(
                     value="*Ask a question to see section citations here.*",
                     label="Citations",
                 )
 
-        # ── Example questions ─────────────────────────────────────────
         gr.Examples(
             examples=[
-                ["What is the punishment for murder under BNS 2023?",           "BNS"],
-                ["What are the bail provisions for non-bailable offences?",      "BNSS"],
-                ["How is electronic evidence admissible under BSA 2023?",        "BSA"],
-                ["What are the rights of a data principal under DPDP Act?",      "DPDP"],
-                ["What changed from IPC Section 302 to BNS?",                   "AUTO"],
-                ["What is the FIR filing procedure under BNSS?",                 "BNSS"],
-                ["Explain consent requirements under DPDP Act 2023.",            "DPDP"],
-                ["What is culpable homicide under BNS?",                         "BNS"],
+                ["What is the punishment for murder under BNS 2023?",      "BNS"],
+                ["What are the bail provisions for non-bailable offences?", "BNSS"],
+                ["How is electronic evidence admissible under BSA 2023?",   "BSA"],
+                ["What are the rights of a data principal under DPDP Act?", "DPDP"],
+                ["What changed from IPC Section 302 to BNS?",              "AUTO"],
+                ["What is the FIR filing procedure under BNSS?",            "BNSS"],
+                ["Explain consent requirements under DPDP Act 2023.",       "DPDP"],
+                ["What is culpable homicide under BNS?",                    "BNS"],
             ],
             inputs=[msg_input, act_filter],
             label="Example questions — click any to try",
         )
 
-        # ── Wire up events ────────────────────────────────────────────
+        # Wire events — no queue
         submit_btn.click(
             fn=chat,
-            inputs=[msg_input, chatbot, act_filter, session_state],
-            outputs=[chatbot, citation_box, session_state],
+            inputs=[msg_input, chatbot, act_filter, session_id],
+            outputs=[chatbot, citation_box, session_id],
+            queue=False,
         )
         msg_input.submit(
             fn=chat,
-            inputs=[msg_input, chatbot, act_filter, session_state],
-            outputs=[chatbot, citation_box, session_state],
+            inputs=[msg_input, chatbot, act_filter, session_id],
+            outputs=[chatbot, citation_box, session_id],
+            queue=False,
         )
         new_session_btn.click(
             fn=start_new_session,
-            inputs=[session_state],
-            outputs=[chatbot, citation_box, session_state],
+            inputs=[session_id],
+            outputs=[chatbot, citation_box, session_id],
+            queue=False,
         )
 
     return demo
 
-
-# ── Entry point ───────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     ui = build_ui()
