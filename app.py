@@ -1,6 +1,6 @@
 """
 app.py — HuggingFace Spaces entry point
-Downloads index from HuggingFace Dataset repo at startup.
+Downloads index from HuggingFace Dataset repo v2 at startup.
 Then runs FastAPI + Gradio together in one process.
 """
 import threading
@@ -29,12 +29,12 @@ def download_index():
     if (target_dir / "BNS_embeddings.pkl").exists():
         print("Index already exists — skipping download")
         return
-    print("Downloading index files from HuggingFace Dataset...")
+    print("Downloading index v2 from HuggingFace Dataset...")
     from huggingface_hub import hf_hub_download
     for filename in INDEX_FILES:
         print(f"  Downloading {filename}...")
         hf_hub_download(
-            repo_id="nitz0219/legal-rag-index-v1",
+            repo_id="nitz0219/legal-rag-index-v2",
             repo_type="dataset",
             filename=filename,
             local_dir=str(target_dir),
